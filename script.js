@@ -35,23 +35,6 @@ async function fetchWebsitesStatus() {
     }
 }
 
-function startCountdown() {
-    const countdownElement = document.getElementById('countdown');
-    let timeLeft = 60;
-
-    const interval = setInterval(() => {
-        timeLeft -= 1;
-        countdownElement.textContent = timeLeft;
-
-        if (timeLeft <= 0) {
-            clearInterval(interval);
-            fetchWebsitesStatus();
-            startCountdown(); // Restart the countdown
-        }
-    }, 1000);
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     fetchWebsitesStatus();
-    startCountdown();
 });
