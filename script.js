@@ -20,14 +20,14 @@ async function fetchWebsitesStatus() {
             try {
                 const pingResponse = await fetch(website, { method: 'HEAD' });
                 if (pingResponse.ok) {
+                    statusItem.classList.add('online');
                     statusItem.querySelector('span:last-child').textContent = 'Online';
-                    statusItem.querySelector('span:last-child').className = 'online';
                 } else {
                     throw new Error('Response not OK');
                 }
             } catch {
+                statusItem.classList.add('offline');
                 statusItem.querySelector('span:last-child').textContent = 'Offline';
-                statusItem.querySelector('span:last-child').className = 'offline';
             }
         }
     } catch (err) {
