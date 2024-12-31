@@ -8,15 +8,56 @@
 </head>
 <body>
     <header>
-        <h1>Website Status Monitor</h1>
+        <div class="header-content">
+            <h1>Website Status Monitor</h1>
+            <p class="status operational">All systems operational</p>
+        </div>
     </header>
     <main>
-        <section id="status-list" class="status-container">
-            <p>Loading website statuses...</p>
+        <section class="overview">
+            <h2>Current Status</h2>
+            <div class="status-summary">
+                <p>Latest downtime detected <strong>6 days ago</strong>.</p>
+            </div>
+        </section>
+        <section class="uptime-section">
+            <h2>Uptime Last 90 Days</h2>
+            <div id="status-list">
+                <p>Loading website statuses...</p>
+            </div>
+        </section>
+        <section class="overall-uptime">
+            <h2>Overall Uptime</h2>
+            <div class="uptime-metrics">
+                <div>
+                    <p>100.00%</p>
+                    <span>Last 24 hours</span>
+                </div>
+                <div>
+                    <p>99.95%</p>
+                    <span>Last 7 days</span>
+                </div>
+                <div>
+                    <p>99.98%</p>
+                    <span>Last 30 days</span>
+                </div>
+                <div>
+                    <p>99.97%</p>
+                    <span>Last 90 days</span>
+                </div>
+            </div>
+        </section>
+        <section class="status-updates">
+            <h2>Status Updates</h2>
+            <div class="update-card">
+                <p><strong>Blog</strong> was down for <strong>19 minutes</strong></p>
+                <p><em>Reason:</em> Connection Timeout</p>
+                <p><em>Details:</em> The response took so long that the connection timed out.</p>
+            </div>
         </section>
     </main>
     <footer>
-        <p>&copy; 2024 Website Monitor. All rights reserved.</p>
+        <p>&copy; 2024 Website Status Monitor. Powered by YourApp.</p>
     </footer>
     <script src="script.js"></script>
 </body>
