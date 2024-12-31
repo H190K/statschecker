@@ -11,23 +11,32 @@ async function fetchWebsitesStatus() {
         websites.forEach(async (website) => {
             const statusItem = document.createElement('div');
             statusItem.className = 'status-item';
-            statusItem.innerHTML = `
-                <span>${website}</span>
-                <span>Checking...</span>
-            `;
+
+            // Create clickable link
+            const websiteLink = document.createElement('a');
+            websiteLink.href = website;
+            websiteLink.target = '_blank'; // Open in a new tab
+            websiteLink.textContent = website;
+
+            // Append website and checking status
+            statusItem.appendChild(websiteLink);
+            const statusText = document.createElement('span');
+            statusText.textContent = 'Checking...';
+            statusItem.appendChild(statusText);
+
             statusList.appendChild(statusItem);
 
             try {
                 const pingResponse = await fetch(website, { method: 'HEAD' });
                 if (pingResponse.ok) {
                     statusItem.classList.add('online');
-                    statusItem.querySelector('span:last-child').textContent = 'Operational';
+                    statusText.textContent = 'Operational';
                 } else {
                     throw new Error('Response not OK');
                 }
             } catch {
                 statusItem.classList.add('offline');
-                statusItem.querySelector('span:last-child').textContent = 'Not Operational';
+                statusText.textContent = 'Not Operational';
             }
         });
     } catch (err) {
