@@ -1,64 +1,57 @@
-body {
-    font-family: 'Roboto', sans-serif;
-    background: linear-gradient(to right, #1f1c2c, #928dab);
-    color: #fff;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
+async function fetchWebsitesStatus() {
+    const statusList = document.getElementById('status-list');
+
+    try {
+        const response = await fetch('websites.txt');
+        const text = await response.text();
+        const websites = text.split('\n').map(website => website.trim()).filter(Boolean);
+
+        statusList.innerHTML = ''; // Clear existing statuses
+
+        for (const website of websites) {
+            const statusItem = document.createElement('div');
+            statusItem.className = 'status-item';
+            statusItem.innerHTML = `
+                <span>${website}</span>
+                <span>Checking...</span>
+            `;
+            statusList.appendChild(statusItem);
+
+            try {
+                const pingResponse = await fetch(website, { method: 'HEAD' });
+                if (pingResponse.ok) {
+                    statusItem.querySelector('span:last-child').textContent = 'Online';
+                    statusItem.querySelector('span:last-child').className = 'online';
+                } else {
+                    throw new Error('Response not OK');
+                }
+            } catch {
+                statusItem.querySelector('span:last-child').textContent = 'Offline';
+                statusItem.querySelector('span:last-child').className = 'offline';
+            }
+        }
+    } catch (err) {
+        statusList.innerHTML = `<p>Error loading websites: ${err.message}</p>`;
+    }
 }
 
-.container {
-    text-align: center;
-    max-width: 800px;
-    width: 90%;
-    padding: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+function startCountdown() {
+    const countdownElement = document.getElementById('countdown');
+    let timeLeft = 60;
+
+    const interval = setInterval(() => {
+        timeLeft -= 1;
+        countdownElement.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(interval);
+            fetchWebsitesStatus();
+            startCountdown(); // Restart the countdown
+        }
+    }, 1000);
 }
 
-h1 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-}
-
-#timer {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-}
-
-#status-list {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.status-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 5px;
-    background: rgba(255, 255, 255, 0.1);
-    font-size: 1rem;
-}
-
-.status-item span {
-    flex: 1;
-}
-
-.online {
-    color: #4caf50; /* Green */
-    font-weight: bold;
-}
-
-.offline {
-    color: #f44336; /* Red */
-    font-weight: bold;
-}
+document.addEventListener('DOMContentLoaded', () => {
+    fetchWebsitesStatus();
+    startCountdown();
+});
