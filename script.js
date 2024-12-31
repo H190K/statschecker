@@ -6,9 +6,9 @@ async function fetchWebsitesStatus() {
         const text = await response.text();
         const websites = text.split('\n').map(website => website.trim()).filter(Boolean);
 
-        statusList.innerHTML = ''; // Clear existing statuses
+        statusList.innerHTML = ''; // Clear existing content
 
-        for (const website of websites) {
+        websites.forEach(async (website) => {
             const statusItem = document.createElement('div');
             statusItem.className = 'status-item';
             statusItem.innerHTML = `
@@ -27,9 +27,9 @@ async function fetchWebsitesStatus() {
                 }
             } catch {
                 statusItem.classList.add('offline');
-                statusItem.querySelector('span:last-child').textContent = 'Offline';
+                statusItem.querySelector('span:last-child').textContent = 'Not Operational';
             }
-        }
+        });
     } catch (err) {
         statusList.innerHTML = `<p>Error loading websites: ${err.message}</p>`;
     }
