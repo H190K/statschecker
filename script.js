@@ -21,7 +21,7 @@ async function fetchWebsitesStatus() {
                 const pingResponse = await fetch(website, { method: 'HEAD' });
                 if (pingResponse.ok) {
                     statusItem.classList.add('online');
-                    statusItem.querySelector('span:last-child').textContent = 'Online';
+                    statusItem.querySelector('span:last-child').textContent = 'Operational';
                 } else {
                     throw new Error('Response not OK');
                 }
