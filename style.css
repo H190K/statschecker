@@ -1,0 +1,36 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+#status-list {
+    margin: 0 auto;
+    width: 80%;
+    max-width: 600px;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #fff;
+}
+
+.online {
+    color: green;
+}
+
+.offline {
+    color: red;
+}
