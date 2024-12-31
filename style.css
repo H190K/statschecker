@@ -1,7 +1,8 @@
+/* General Styling */
 body {
-    font-family: 'Roboto', sans-serif;
-    background: linear-gradient(to right, #1f1c2c, #928dab);
-    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #141e30, #243b55);
+    color: #ffffff;
     margin: 0;
     padding: 0;
     display: flex;
@@ -11,53 +12,57 @@ body {
     overflow: hidden;
 }
 
+/* Main Container */
 .container {
     text-align: center;
-    max-width: 800px;
+    max-width: 700px;
     width: 90%;
-    padding: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    padding: 25px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
+/* Title Styling */
 h1 {
     font-size: 2.5rem;
     margin-bottom: 20px;
+    color: #00d4ff;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-#timer {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-}
-
-#status-list {
-    margin-top: 20px;
+/* Status List Container */
+.status-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
+    margin-top: 20px;
 }
 
+/* Individual Status Item */
 .status-item {
     display: flex;
     justify-content: space-between;
-    padding: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 5px;
-    background: rgba(255, 255, 255, 0.1);
-    font-size: 1rem;
+    padding: 15px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    font-size: 1.2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
 }
 
-.status-item span {
-    flex: 1;
+.status-item:hover {
+    transform: translateY(-5px);
 }
 
+/* Online Status */
 .online {
     color: #4caf50; /* Green */
     font-weight: bold;
 }
 
+/* Offline Status */
 .offline {
     color: #f44336; /* Red */
     font-weight: bold;
