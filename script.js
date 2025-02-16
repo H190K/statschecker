@@ -1,35 +1,28 @@
 async function fetchWebsitesStatus() {
     const statusList = document.getElementById('status-list');
-    const refreshButton = document.getElementById('refreshButton');
-    
-    refreshButton.disabled = true;
-    refreshButton.textContent = 'Checking...';
-    
     try {
-        // Sample websites (you can replace these with your own)
-        const websites = [
-            'google.com',
-            'github.com',
-            'example.com',
-            'facebook.com',
-            'twitter.com'
-        ];
+        const response = await fetch('websites.txt');
+        const text = await response.text();
+        const websites = text.split('\n').map(website => website.trim()).filter(Boolean);
         
-        statusList.innerHTML = '';
+        statusList.innerHTML = ''; // Clear existing content
         
         const checkPromises = websites.map(async (website) => {
             const statusItem = document.createElement('div');
             statusItem.className = 'status-item';
             
+            // Create clickable link
             const websiteLink = document.createElement('a');
             websiteLink.href = website.startsWith('http') ? website : `https://${website}`;
             websiteLink.target = '_blank';
             websiteLink.textContent = website;
             
+            // Create status text element
             const statusText = document.createElement('span');
             statusText.className = 'status-text';
             statusText.textContent = 'Checking...';
             
+            // Append elements
             statusItem.appendChild(websiteLink);
             statusItem.appendChild(statusText);
             statusList.appendChild(statusItem);
@@ -51,6 +44,7 @@ async function fetchWebsitesStatus() {
                 statusItem.classList.add('offline');
                 statusText.textContent = 'Not Operational';
                 
+                // Add error info if available
                 if (error.message) {
                     const errorInfo = document.createElement('span');
                     errorInfo.className = 'error-info';
@@ -67,9 +61,6 @@ async function fetchWebsitesStatus() {
                 Error loading websites: ${err.message}
             </div>
         `;
-    } finally {
-        refreshButton.disabled = false;
-        refreshButton.textContent = 'Refresh Status';
     }
 }
 
@@ -77,6 +68,7 @@ async function fetchWebsitesStatus() {
 document.addEventListener('DOMContentLoaded', () => {
     fetchWebsitesStatus();
     
+    // Add refresh button functionality
     const refreshButton = document.getElementById('refreshButton');
     refreshButton.addEventListener('click', () => {
         fetchWebsitesStatus();
