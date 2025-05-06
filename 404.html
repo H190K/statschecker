@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Apply Inter font globally */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Optional: Smooth transition for hover effects */
+        a, button {
+            transition: all 0.3s ease;
+        }
+        /* Gradient animation for the H1 heading */
+        @keyframes gradient-h1 {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animate-gradient-h1 {
+          background-size: 300% 300%;
+          background-image: linear-gradient(to right, #6366f1, #a855f7, #ec4899, #f97316, #ec4899, #a855f7, #6366f1); /* Indigo, Purple, Pink, Orange, Pink, Purple, Indigo */
+          animation: gradient-h1 8s ease infinite;
+        }
+
+        /* More dynamic gradient animation for the button */
+        @keyframes gradient-button {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animate-gradient-button {
+            background-size: 200% 200%; /* Adjust size for desired effect */
+            animation: gradient-button 4s linear infinite; /* Faster, linear animation */
+            /* Apply a subtle glow effect using box-shadow */
+            box-shadow: 0 0 15px 5px rgba(168, 85, 247, 0.4); /* Purple glow, adjust color/spread as needed */
+        }
+        /* Enhance glow on hover */
+        .animate-gradient-button:hover {
+            box-shadow: 0 0 25px 8px rgba(249, 115, 22, 0.5); /* Orange glow on hover */
+        }
+
+    </style>
+</head>
+<body class="bg-black text-gray-100 flex flex-col min-h-screen">
+
+    <main class="flex-grow flex flex-col items-center justify-center text-center p-8">
+        <h1 class="text-8xl md:text-9xl lg:text-[12rem] font-black tracking-tighter mb-4 text-transparent bg-clip-text animate-gradient-h1">
+            404
+        </h1>
+
+        <h2 class="text-2xl md:text-3xl font-semibold mb-4 text-gray-300">
+            Oops! Page Not Found.
+        </h2>
+
+        <p class="text-md md:text-lg text-gray-400 mb-8 max-w-md">
+            Sorry, the page you are looking for doesn't exist or has been moved. Let's get you back on track.
+        </p>
+
+        <a href="/" class="px-6 py-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-orange-500 text-white font-semibold rounded-lg shadow-md hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 animate-gradient-button">
+            Go Back Home
+        </a>
+    </main>
+
+    <footer class="text-center py-4 mt-auto text-gray-400 text-sm">
+        Powered by <a href="https://h190k.com" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:text-indigo-300 font-medium">h190k</a>
+    </footer>
+
+</body>
+</html>
