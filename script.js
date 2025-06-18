@@ -3,57 +3,64 @@ let countdownInterval;
 let nextRefreshTime = 0;
 
 function updateSummaryStats(total, operational, issues) {
-    document.getElementById('total-systems').textContent = total;
-    document.getElementById('operational-systems').textContent = operational;
-    document.getElementById('issue-systems').textContent = issues;
+    const totalElement = document.getElementById('total-systems');
+    const operationalElement = document.getElementById('operational-systems');
+    const issuesElement = document.getElementById('issue-systems');
+    
+    if (totalElement) totalElement.textContent = total;
+    if (operationalElement) operationalElement.textContent = operational;
+    if (issuesElement) issuesElement.textContent = issues;
 }
 
 function updateCountdownDisplay(secondsRemaining) {
     const countdownElement = document.getElementById('countdown');
     if (countdownElement) {
-        countdownElement.textContent = secondsRemaining;
+        countdownElement.textContent = Math.max(0, secondsRemaining);
     }
 }
 
 function startCountdown() {
     clearInterval(countdownInterval);
-
     const storedNextRefreshTime = parseInt(localStorage.getItem('nextRefreshTime'), 10);
     const currentTime = Math.floor(Date.now() / 1000);
-
-    if (storedNextRefreshTime && storedNextRefreshTime > currentTime) {
-        nextRefreshTime = storedNextRefreshTime;
-    } else {
-        nextRefreshTime = currentTime + REFRESH_INTERVAL_SECONDS;
-        localStorage.setItem('nextRefreshTime', nextRefreshTime);
-    }
-
-    let secondsRemaining = nextRefreshTime - currentTime;
-    updateCountdownDisplay(secondsRemaining);
-
+    
+    nextRefreshTime = (storedNextRefreshTime && storedNextRefreshTime > currentTime) 
+        ? storedNextRefreshTime 
+        : currentTime + REFRESH_INTERVAL_SECONDS;
+    
+    localStorage.setItem('nextRefreshTime', nextRefreshTime);
+    updateCountdownDisplay(nextRefreshTime - currentTime);
+    
     countdownInterval = setInterval(() => {
-        secondsRemaining--;
+        const now = Math.floor(Date.now() / 1000);
+        const secondsRemaining = nextRefreshTime - now;
+        
         if (secondsRemaining >= 0) {
             updateCountdownDisplay(secondsRemaining);
         } else {
             clearInterval(countdownInterval);
-            fetchWebsitesStatus();
+            fetchWebsitesStatus(true); // true = auto-refresh
         }
     }, 1000);
 }
 
-async function fetchWebsitesStatus() {
+async function fetchWebsitesStatus(isAutoRefresh = false) {
     const statusList = document.getElementById('status-list');
     const refreshButton = document.getElementById('refreshButton');
-    if(refreshButton) refreshButton.disabled = true;
-    if(statusList) statusList.innerHTML = '<p class="loading-text">Loading website statuses...</p>';
+    
+    if (refreshButton) refreshButton.disabled = true;
+    if (statusList) statusList.innerHTML = '<p class="loading-text">Loading website statuses...</p>';
 
     try {
-        const response = await fetch('websites.txt');
-        const text = await response.text();
-        const websites = text.split('\n').map(website => website.trim()).filter(Boolean);
+        const response = await fetch('websites.txt', {cache: 'no-store'}); // Added cache control
+        if (!response.ok) throw new Error('Failed to fetch websites list');
         
-        if(statusList) statusList.innerHTML = '';
+        const text = await response.text();
+        const websites = text.split('\n')
+            .map(website => website.trim())
+            .filter(website => website && !website.startsWith('#')); // Skip empty lines and comments
+        
+        if (statusList) statusList.innerHTML = '';
         
         let operationalCount = 0;
         let issuesCount = 0;
@@ -73,14 +80,19 @@ async function fetchWebsitesStatus() {
             
             statusItem.appendChild(websiteLink);
             statusItem.appendChild(statusText);
-            statusList.appendChild(statusItem);
+            if (statusList) statusList.appendChild(statusItem);
             
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
                 const pingResponse = await fetch(websiteLink.href, { 
                     method: 'GET', 
                     mode: 'no-cors',
-                    timeout: 5000
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
                 
                 if (pingResponse.ok || pingResponse.type === 'opaque') {
                     statusItem.classList.add('online');
@@ -97,7 +109,7 @@ async function fetchWebsitesStatus() {
                 if (error.message) {
                     const errorInfo = document.createElement('span');
                     errorInfo.className = 'error-info';
-                    errorInfo.textContent = `(${error.message})`;
+                    errorInfo.textContent = `(${error.name === 'AbortError' ? 'Timeout' : error.message})`;
                     statusText.appendChild(errorInfo);
                 }
             }
@@ -106,23 +118,53 @@ async function fetchWebsitesStatus() {
         await Promise.all(checkPromises);
         updateSummaryStats(websites.length, operationalCount, issuesCount);
     } catch (err) {
-        if(statusList) statusList.innerHTML = `
-            <div class="error-message">
-                Error loading websites: ${err.message}
-            </div>
-        `;
+        if (statusList) {
+            statusList.innerHTML = `
+                <div class="error-message">
+                    Error loading websites: ${err.message}
+                </div>
+            `;
+        }
         updateSummaryStats(0, 0, 0);
     } finally {
-        if(refreshButton) refreshButton.disabled = false;
-        const currentTime = Math.floor(Date.now() / 1000);
-        nextRefreshTime = currentTime + REFRESH_INTERVAL_SECONDS;
-        localStorage.setItem('nextRefreshTime', nextRefreshTime);
+        if (refreshButton) refreshButton.disabled = false;
+        if (isAutoRefresh) {
+            const currentTime = Math.floor(Date.now() / 1000);
+            nextRefreshTime = currentTime + REFRESH_INTERVAL_SECONDS;
+            localStorage.setItem('nextRefreshTime', nextRefreshTime);
+        }
         startCountdown();
     }
 }
 
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme); // Changed from body to documentElement
+    updateToggleIcon(savedTheme);
+}
+
+function updateToggleIcon(theme) {
+    const toggle = document.getElementById('themeToggle');
+    if (toggle) {
+        toggle.textContent = theme === 'dark' ? '🌙' : '☀️';
+        toggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Start the countdown and fetch initial status
+    initTheme();
+    
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateToggleIcon(newTheme);
+        });
+    }
+    
     startCountdown();
     fetchWebsitesStatus();
     
@@ -130,7 +172,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (refreshButton) {
         refreshButton.addEventListener('click', () => {
             clearInterval(countdownInterval);
+            localStorage.removeItem('nextRefreshTime');
             fetchWebsitesStatus();
+            
+            const currentTime = Math.floor(Date.now() / 1000);
+            nextRefreshTime = currentTime + REFRESH_INTERVAL_SECONDS;
+            localStorage.setItem('nextRefreshTime', nextRefreshTime);
+            startCountdown();
         });
+    }
+});
+
+window.addEventListener('beforeunload', () => {
+    if (!localStorage.getItem('nextRefreshTime')) {
+        const currentTime = Math.floor(Date.now() / 1000);
+        localStorage.setItem('nextRefreshTime', currentTime + REFRESH_INTERVAL_SECONDS);
     }
 });

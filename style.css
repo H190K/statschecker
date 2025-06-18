@@ -1,13 +1,16 @@
 :root {
     --bg-primary: #000000;
-    --bg-secondary: #1c1c1e;
-    --bg-tertiary: #2c2c2e;
+    --bg-secondary: rgba(28, 28, 30, 0.9);
+    --bg-tertiary: rgba(44, 44, 46, 0.8);
     --text-primary: #ffffff;
     --text-secondary: #8e8e93;
     --accent-blue: #0a84ff;
     --accent-green: #30d158;
     --accent-red: #ff453a;
-    --border-color: rgba(255, 255, 255, 0.1);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --blur-amount: 16px;
+    --transition-speed: 0.3s;
+    --transition-default: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
@@ -35,14 +38,28 @@ body {
 }
 
 .container {
-    max-width: 800px;
+    max-width: 1000px;
     width: 100%;
     padding: 2rem;
+    backdrop-filter: blur(var(--blur-amount));
 }
 
 header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
+    padding: 2rem;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(var(--blur-amount));
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    transform: translateY(0);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+header:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
 }
 
 header h1 {
@@ -51,6 +68,7 @@ header h1 {
     margin-bottom: 0.5rem;
     background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -61,10 +79,18 @@ header h1 {
 
 .status-header {
     background: var(--bg-secondary);
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     border: 1px solid var(--border-color);
+    backdrop-filter: blur(var(--blur-amount));
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.status-header:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
 }
 
 .status-summary {
@@ -106,36 +132,91 @@ header h1 {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
+    color: var(--accent-blue);
+    font-size: 1.1rem;
+    font-weight: 500;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    margin-left: 1rem;
+    box-shadow: 0 2px 8px rgba(10,132,255,0.08);
 }
 
-.timer-icon {
-    fill: currentColor;
+.status-item {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+    transition: all var(--transition-speed) ease;
+    opacity: 0;
+    transform: translateY(10px);
+    backdrop-filter: blur(var(--blur-amount));
+}
+
+.status-item:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    background: rgba(44, 44, 46, 0.9);
+}
+
+.status-item.fade-in {
+    animation: fadeInUp 0.5s ease forwards;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.status-item.online .status-text {
+    color: var(--accent-green);
+    background: rgba(48, 209, 88, 0.15);
+}
+
+.status-item.offline .status-text {
+    color: var(--accent-red);
+    background: rgba(255, 69, 58, 0.15);
 }
 
 .refresh-button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
-    background: var(--accent-blue);
+    background: linear-gradient(90deg, var(--accent-blue), #0071e3);
+    box-shadow: 0 4px 15px rgba(10, 132, 255, 0.3);
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 0.8rem 2rem;
     border: none;
-    border-radius: 8px;
     color: white;
-    font-size: 0.9rem;
-    font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease, transform 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.refresh-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #0071e3, var(--accent-blue));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
 }
 
 .refresh-button:hover {
-    background: #0071e3;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(10, 132, 255, 0.4);
+}
+
+.refresh-button:hover::before {
+    opacity: 1;
 }
 
 .refresh-button:active {
     transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(10, 132, 255, 0.4);
 }
 
 .refresh-button:disabled {
@@ -226,26 +307,1931 @@ footer {
     font-size: 0.9rem;
 }
 
-@media (max-width: 640px) {
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --blur-amount: 8px;
+    }
+    
     .container {
         padding: 1rem;
     }
     
+    header {
+        padding: 1.5rem 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+    
+    .status-header {
+        padding: 1.25rem;
+    }
+    
     .status-summary {
         grid-template-columns: 1fr;
-    }
-    
-    .refresh-info {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .timer {
-        justify-content: center;
+        gap: 0.75rem;
     }
     
     .refresh-button {
         width: 100%;
-        justify-content: center;
+        margin-top: 1rem;
     }
 }
+
+/* Smooth hover transitions */
+.status-item {
+    transition: var(--transition-default);
+    will-change: transform;
+}
+
+.status-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+/* Animated refresh button */
+.refresh-button {
+    transition: var(--transition-default);
+}
+
+.refresh-button:hover {
+    transform: scale(1.02) translateY(-1px);
+    box-shadow: 0 4px 16px rgba(10,132,255,0.2);
+}
+
+/* Smooth loading animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.status-item {
+    animation: fadeIn 0.4s ease forwards;
+}
+
+/* Enhanced progress indicator */
+.timer {
+    position: relative;
+    overflow: hidden;
+}
+
+.timer::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--accent-blue);
+    transform: scaleX(calc(var(--timer-progress) / 100));
+    transform-origin: left;
+    transition: transform 0.5s linear;
+}
+
+/* Theme Variables */
+[data-theme="light"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f2f2f7;
+    --bg-tertiary: #e5e5ea;
+    --text-primary: #1c1c1e;
+    --text-secondary: #636366;
+    --border-color: rgba(0, 0, 0, 0.1);
+    --accent-blue: #007aff;
+}
+
+[data-theme="light"] header h1 {
+    background: none !important;
+    color: var(--text-primary) !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
+    -webkit-text-fill-color: initial !important;
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+.theme-toggle {
+    position: absolute;
+    right: 2rem;
+    top: 1.5rem;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-default);
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover {
+    background: var(--accent-blue);
+    color: white;
+    transform: scale(1.1) rotate(360deg);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: var(--accent-blue);
+    color: white;
+}
+
+[data-theme="light"] .theme-
